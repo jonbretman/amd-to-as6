@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var filename = process.argv[2];
+var source = fs.readFileSync(filename, 'utf8');
+var amdtoes6 = require('../index');
+
+process.stdout.write(amdtoes6(source) + '\n');
