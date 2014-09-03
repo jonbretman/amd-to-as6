@@ -18,3 +18,4 @@ makeTest('define-with-deps');
 makeTest('define-no-deps');
 makeTest('require-with-deps');
 makeTest('require-no-deps');
+makeTest('inline-sync-requires');
