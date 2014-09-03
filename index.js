@@ -18,13 +18,13 @@ function convert (source) {
     var result = falafel(source, function (node) {
 
         if (isNamedDefine(node)) {
-            throw new Error('Found a named define() - this is not supported.');
+            throw new Error('Found a named define - this is not supported.');
         }
 
         if (isModuleDefinition(node)) {
 
             if (mainCallExpression) {
-                throw new Error('Found multiple module definitions in file.');
+                throw new Error('Found multiple module definitions in one file.');
             }
 
             mainCallExpression = node;

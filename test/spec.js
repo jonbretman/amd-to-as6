@@ -19,3 +19,17 @@ makeTest('define-no-deps');
 makeTest('require-with-deps');
 makeTest('require-no-deps');
 makeTest('inline-sync-requires');
+
+var makeErrorCaseTest = function (name, message) {
+
+    exports['test ' + name.replace(/-/g, ' ') + ' throws error'] = function (test) {
+        test.throws(function () {
+            amdToEs6(readFile(name));
+        }, new RegExp(message));
+        test.done();
+    };
+
+};
+
+makeErrorCaseTest('multiple-module-definitions', 'Found multiple module definitions in one file.');
+makeErrorCaseTest('named-define', 'Found a named define - this is not supported.');
