@@ -3,10 +3,10 @@
 [![Build Status](https://travis-ci.org/jonbretman/amd-to-as6.svg?branch=master)](https://travis-ci.org/jonbretman/amd-to-as6)
 
 ### What is it?
-A simple tool for converting AMD modules into ES6 modules, either via the command line or programatically.
+A simple tool for converting AMD modules into ES6 modules, either via the command line or programmatically.
 
 ### Why?
-Converting a large project from AMD modules to ES6 modules manually would be a very time consuming and boring task.
+AMD and RequireJS are great, but ES6 modules provide a nicer syntax for writing JS modules and there are so many great [tools](https://github.com/addyosmani/es6-tools) available now for converting ES6 to ES5 which also allow you to use ES6 syntax/features.
 
 ### Installing
 
@@ -16,28 +16,31 @@ npm install amd-to-es6 -g
 
 ### Usage
 
-You can convert either a single file or a whole directory. By default `amdtoes6` will **NOT** modifiy the existing files, but the `--in-place` option to do this. 
-
-
-To convert a single file:
+To convert a single file (compiled output sent to stdout):
 
 ```sh
-# es6 code will be printed to stdout
-amdtoes6 some-file.js
-
-# some-file.js will be modified
-amd2toes6 some-file.js --in-place
+amdtoes6 my-amd-module.js > my-awesome-es6-module.js
 ```
 
-To convert a whole directory.
+To convert a whole directory:
 
 ```sh
-# a new directory called es6 will be created
-amdtoes6 --dir src/ --out es6/
-
-# modified all files in the directory
-amdtoes6 --dir src/ --in-place
+amdtoes6 --dir src/ --out --es6/
 ```
+
+If you want to modify the original files just set `--out` to the same as `--dir`.
+
+```sh
+amdtoes6 --dir src --out src
+```
+
+If you want some files to be ignored use the `--ignore` flag which accepts a glob pattern that is relative to `--dir`.
+
+```sh
+amdtoes6 --dir src --ignore libs/**/*.js
+```
+
+If a file cannot be compiled an message will be printed explaining the error and it will be skipped.
 
 ### Examples
 
@@ -123,3 +126,23 @@ import 'path/to/b';
 
 export default {};
 ```
+
+
+### Options
+```sh
+
+  Usage: amdtoes6 [options]
+
+  Options:
+
+    -h, --help          output usage information
+    -d --dir <dirname>  Use this option to specify a directory to compile.
+    -o --out <dirname>  If using the --dir option this specifies the output directory.
+    -i --ignore <glob>  If using the --dir options this specifies to exclude eg. libs/**/*
+
+```
+
+### Not Supported
+* Named define modules eg. `define('my-module', function () {})`
+* Files with multiple module definitions
+* UMD style modules where the callback passed to `define` is not a function literal eg. `define(factoryFn)`
