@@ -1,8 +1,16 @@
 {
   "name": "amd-to-es6",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Convert AMD modules into ES6 modules",
+  "author": "Jon Bretman",
   "main": "index.js",
+  "bin": {
+    "amdtoes6": "./bin/amdtoes6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jonbretman/amd-to-as6.git"
+  },
   "directories": {
     "test": "test"
   },
@@ -17,6 +25,5 @@
   "scripts": {
     "test": "node_modules/.bin/nodeunit test/spec.js"
   },
-  "author": "",
   "license": "ISC"
 }
