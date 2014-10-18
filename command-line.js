@@ -15,6 +15,9 @@ program
                 memo.push(value);
                 return memo;
             }, [])
+    .option('-b --beautify',
+            'Run the output through jsbeautify (mainly useful for fixing indentation)',
+            false)
     .parse(process.argv);
 
 if (program.dir && !program.out) {
@@ -83,7 +86,9 @@ inputFiles.forEach(function (srcFile) {
     var compiled;
 
     try {
-        compiled = amdtoes6(context);
+        compiled = amdtoes6(context, {
+            beautify: program.beautify
+        });
     }
     catch (e) {
         console.error('Unable to compile ' + filePath + '.\n  Error:  ' + e.message + '\n');

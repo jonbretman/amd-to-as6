@@ -6,9 +6,12 @@ module.exports = convert;
 /**
  * Converts some code from AMD to ES6
  * @param {string} source
+ * @param {object} [options]
  * @returns {string}
  */
-function convert (source) {
+function convert (source, options) {
+
+    options = options || {};
 
     var dependenciesMap = {};
     var syncRequires = [];
@@ -106,10 +109,12 @@ function convert (source) {
     moduleCode += getModuleCode(moduleFunc);
 
     // fix indentation
-    moduleCode = beautify(moduleCode);
+    if (options.beautify) {
+        moduleCode = beautify(moduleCode);
 
-    // jsbeautify doesn't understand es6 module syntax yet
-    moduleCode = moduleCode.replace(/export[\s\S]default[\s\S]/, 'export default ');
+        // jsbeautify doesn't understand es6 module syntax yet
+        moduleCode = moduleCode.replace(/export[\s\S]default[\s\S]/, 'export default ');
+    }
 
     // update the node with the new es6 code
     mainCallExpression.parent.update(moduleCode);
