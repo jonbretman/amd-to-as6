@@ -21,6 +21,10 @@ function convert (source) {
             throw new Error('Found a named define - this is not supported.');
         }
 
+        if (isDefineUsingIdentifier(node)) {
+            throw new Error('Found a define using a variable as the callback - this is not supported.');
+        }
+
         if (isModuleDefinition(node)) {
 
             if (mainCallExpression) {
@@ -34,7 +38,7 @@ function convert (source) {
             syncRequires.push(node);
         }
 
-        else if (isRequireWithSideEffects(node)) {
+        else if (isRequireWithNoCallback(node)) {
             requiresWithSideEffects.push(node);
         }
 
@@ -274,7 +278,7 @@ function isModuleDefinition (node) {
  * @param {object} node
  * @returns {boolean}
  */
-function isRequireWithSideEffects (node) {
+function isRequireWithNoCallback (node) {
     return isRequire(node) && arrayEquals(getArgumentsTypes(node), ['ArrayExpression']);
 }
 
@@ -285,6 +289,19 @@ function isRequireWithSideEffects (node) {
  */
 function isNamedDefine (node) {
     return isDefine(node) && getArgumentsTypes(node)[0] === 'Literal';
+}
+
+/**
+ * Returns true if node represents a define call where the callback is an identifier eg. define(factoryFn);
+ * @param {object} node
+ * @returns {boolean}
+ */
+function isDefineUsingIdentifier(node) {
+    if (!isDefine(node)) {
+        return false;
+    }
+    var argTypes = getArgumentsTypes(node);
+    return argTypes[argTypes.length - 1] === 'Identifier';
 }
 
 /**

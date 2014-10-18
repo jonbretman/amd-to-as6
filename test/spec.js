@@ -13,7 +13,6 @@ var makeTest = function (name) {
     };
 
 };
-
 makeTest('define-with-deps');
 makeTest('define-no-deps');
 makeTest('require-with-deps');
@@ -30,6 +29,6 @@ var makeErrorCaseTest = function (name, message) {
     };
 
 };
-
 makeErrorCaseTest('multiple-module-definitions', 'Found multiple module definitions in one file.');
 makeErrorCaseTest('named-define', 'Found a named define - this is not supported.');
+makeErrorCaseTest('umd-module', 'Found a define using a variable as the callback - this is not supported.');
