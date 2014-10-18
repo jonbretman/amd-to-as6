@@ -40,6 +40,8 @@ If you want some files to be ignored use the `--ignore` flag which accepts a glo
 amdtoes6 --dir src --ignore libs/**/*.js
 ```
 
+If you want the indentation to be "fixed" then use the `--beautify` option which just runs the output through [jsbeautify](https://github.com/beautify-web/js-beautify).
+
 If a file cannot be compiled an message will be printed explaining the error and it will be skipped.
 
 ### Examples
@@ -127,6 +129,28 @@ import 'path/to/b';
 export default {};
 ```
 
+---
+
+Without the `--beautify` option.
+
+**AMD**
+```js
+define(['path/to/a', 'path/to/b'], function (a, b) {
+    return function (x) {
+        return a(b(x));
+    };
+});
+```
+
+**ES6**
+```js
+import a from 'path/to/a';
+import b from 'path/to/b';
+
+    export default function (x) {
+        return a(b(x));
+    };
+```
 
 ### Options
 ```sh
@@ -139,6 +163,7 @@ export default {};
     -d --dir <dirname>  Use this option to specify a directory to compile.
     -o --out <dirname>  If using the --dir option this specifies the output directory.
     -i --ignore <glob>  If using the --dir options this specifies to exclude eg. libs/**/*
+    -b --beautify       Run the output through jsbeautify (mainly useful for fixing indentation)
 
 ```
 
