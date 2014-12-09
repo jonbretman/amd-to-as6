@@ -32,6 +32,8 @@ var makeErrorCaseTest = function (name, message) {
 makeErrorCaseTest('multiple-module-definitions', 'Found multiple module definitions in one file.');
 makeErrorCaseTest('named-define', 'Found a named define - this is not supported.');
 makeErrorCaseTest('umd-module', 'Found a define using a variable as the callback - this is not supported.');
+makeErrorCaseTest('nested-module-definitions', 'Found multiple module definitions in one file.');
+makeErrorCaseTest('dynamic-module-names', 'Dynamic module names are not supported.');
 
 exports['test no beautify'] = function (test) {
      test.equal(amdToEs6(readFile('no-beautify'), {beautify: false}), readFile('no-beautify-expected'));
