@@ -45,6 +45,10 @@ function convert (source, options) {
             requiresWithSideEffects.push(node);
         }
 
+        else if (isRequireWithDynamicModuleName(node)) {
+            throw new Error('Dynamic module names are not supported.');
+        }
+
     });
 
     // no module definition found - return source untouched
@@ -58,8 +62,8 @@ function convert (source, options) {
 
     if (hasDeps) {
 
-        var modulePaths = moduleDeps.elements.map(function (element) {
-            return element.value;
+        var modulePaths = moduleDeps.elements.map(function (node) {
+            return node.value;
         });
 
         var importNames = moduleFunc.params.map(function (param) {
@@ -234,13 +238,26 @@ function arrayEquals (arr1, arr2) {
 }
 
 /**
- *
+ * Returns true if node is a require() call where the module name is a literal.
  * @param {object} node
  * @returns {boolean}
  */
 function isSyncRequire (node) {
     return isRequire(node) &&
            arrayEquals(getArgumentsTypes(node), ['Literal']);
+}
+
+/**
+ * Returns true if node is a require() call where the module name is not a literal.
+ * @param {object} node
+ * @returns {boolean}
+ */
+function isRequireWithDynamicModuleName(node) {
+    if (!isRequire(node)) {
+        return false;
+    }
+    var argTypes = getArgumentsTypes(node);
+    return argTypes.length === 1 && argTypes[argTypes.length - 1] !== 'Identifier';
 }
 
 /**
@@ -266,6 +283,11 @@ function isModuleDefinition (node) {
     }
 
     var argTypes = getArgumentsTypes(node);
+
+    // eg. require(['a', 'b'])
+    if (arrayEquals(argTypes, ['ArrayExpression'])) {
+        return true;
+    }
 
     // eg. require(['a', 'b'], function () {})
     if (arrayEquals(argTypes, ['ArrayExpression', 'FunctionExpression'])) {
