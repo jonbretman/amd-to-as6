@@ -3,6 +3,7 @@ var glob = require('glob');
 var path = require('path');
 var fs = require('fs');
 var amdtoes6 = require('./index');
+var mkdirp = require('mkdirp')
 
 program
     .option('-d --dir <dirname>',
@@ -59,25 +60,6 @@ if (program.dir) {
     }
 }
 
-function mkdir(dirpath) {
-
-    dirpath = path.resolve(dirpath);
-
-    try {
-        if (!fs.statSync(dirpath).isDirectory()) {
-            console.error(dirpath + ' exists and is not a directory');
-            process.exit(1);
-        }
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            mkdir(path.dirname(dirpath));
-            fs.mkdirSync(dirpath);
-        } else {
-            throw err;
-        }
-    }
-}
-
 inputFiles.forEach(function (srcFile) {
 
     var filePath = program.dir ? path.join(program.dir, srcFile) : srcFile;
@@ -96,7 +78,9 @@ inputFiles.forEach(function (srcFile) {
     }
 
     if (program.dir) {
-        mkdir(program.out);
+        var outdir = path.dirname(path.join(program.out, srcFile));
+        mkdirp.sync(outdir);
+
         fs.writeFileSync(path.join(program.out, srcFile), compiled);
         console.log('Successfully compiled', filePath, 'to', path.join(program.out, srcFile));
     }
