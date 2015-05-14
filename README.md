@@ -25,7 +25,7 @@ amdtoes6 my-amd-module.js > my-awesome-es6-module.js
 To convert a whole directory:
 
 ```sh
-amdtoes6 --dir src/ --out --es6/
+amdtoes6 --dir src/ --out es6/
 ```
 
 If you want to modify the original files just set `--out` to the same as `--dir`.
