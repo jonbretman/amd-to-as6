@@ -1,4 +1,5 @@
 var falafel = require('falafel');
+var acorn = require('acorn-jsx');
 var beautify = require('js-beautify').js_beautify;
 
 module.exports = convert;
@@ -18,8 +19,11 @@ function convert (source, options) {
     var requiresWithSideEffects = [];
     var mainCallExpression = null;
 
-    var result = falafel(source, function (node) {
-
+    var result = falafel(source, {
+        parser: acorn,
+        plugins: {jsx: true},
+        ecmaVersion: 6
+    }, function (node) {
         if (isNamedDefine(node)) {
             throw new Error('Found a named define - this is not supported.');
         }
