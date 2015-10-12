@@ -1,3 +1,4 @@
+var os = require('os');
 var falafel = require('falafel');
 var acorn = require('acorn-jsx');
 var beautify = require('js-beautify').js_beautify;
@@ -67,7 +68,7 @@ function convert (source, options) {
     if (hasDeps) {
 
         var modulePaths = moduleDeps.elements.map(function (node) {
-            return node.value;
+            return node.raw;
         });
 
         var importNames = moduleFunc.params.map(function (param) {
@@ -81,11 +82,11 @@ function convert (source, options) {
     }
 
     syncRequires.forEach(function (node) {
-        var moduleName = node.arguments[0].value;
+        var moduleName = node.arguments[0].raw;
 
         // if no import name assigned then create one
         if (!dependenciesMap[moduleName]) {
-            dependenciesMap[moduleName] = makeImportName(moduleName);
+            dependenciesMap[moduleName] = makeImportName(node.arguments[0].value);
         }
 
         // replace with the import name
@@ -142,14 +143,14 @@ function getImportStatements (dependencies) {
     for (var key in dependencies) {
 
         if (!dependencies[key]) {
-            statements.push('import \'' + key + '\';');
+            statements.push('import ' + key + ';');
         }
         else {
-            statements.push('import ' + dependencies[key] + ' from \'' + key + '\';');
+            statements.push('import ' + dependencies[key] + ' from ' + key + ';');
         }
     }
 
-    return statements.join('\n');
+    return statements.join(os.EOL);
 }
 
 /**
