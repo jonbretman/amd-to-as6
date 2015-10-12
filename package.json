@@ -7,6 +7,11 @@
   "bin": {
     "amdtoes6": "./bin/amdtoes6"
   },
+  "files": [
+    "bin/",
+    "command-line.js",
+    "index.js"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/jonbretman/amd-to-as6.git"
