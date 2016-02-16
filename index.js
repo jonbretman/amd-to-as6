@@ -342,5 +342,5 @@ function isDefineUsingIdentifier(node) {
  * @returns {string}
  */
 function makeImportName (moduleName) {
-    return '$__' + moduleName.replace(/-/g, '_').replace(/\//g, '_');
+    return '$__' + moduleName.replace(/-/g, '_').replace(/\//g, '_').replace(/\./g, '_').replace(/\!/g, '_');
 }
