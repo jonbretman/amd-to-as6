@@ -3,7 +3,7 @@ var glob = require('glob');
 var path = require('path');
 var fs = require('fs');
 var amdtoes6 = require('./index');
-var mkdirp = require('mkdirp')
+var mkdirp = require('mkdirp');
 
 program
     .option('-d --dir <dirname>',
@@ -16,6 +16,9 @@ program
                 memo.push(value);
                 return memo;
             }, [])
+    .option('-g --glob [glob]',
+            'If using the --dir option, optionally specify the glob pattern to match for input files',
+            '**/*.js')
     .option('-b --beautify',
             'Run the output through jsbeautify (mainly useful for fixing indentation)',
             false)
@@ -40,7 +43,7 @@ var inputFiles = program.args;
 
 if (program.dir) {
 
-    inputFiles = glob.sync('**/*.js', {
+    inputFiles = glob.sync(program.glob, {
         cwd: program.dir
     });
 
