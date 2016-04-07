@@ -1,6 +1,6 @@
 {
   "name": "amd-to-es6",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "description": "Convert AMD modules into ES6 modules",
   "author": "Jon Bretman",
   "main": "index.js",
