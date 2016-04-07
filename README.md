@@ -163,6 +163,7 @@ import b from 'path/to/b';
     -d --dir <dirname>  Use this option to specify a directory to compile.
     -o --out <dirname>  If using the --dir option this specifies the output directory.
     -i --ignore <glob>  If using the --dir options this specifies to exclude eg. libs/**/*
+    -g --glob [glob]    If using the --dir option, optionally specify the glob pattern to match for input files
     -b --beautify       Run the output through jsbeautify (mainly useful for fixing indentation)
 
 ```
