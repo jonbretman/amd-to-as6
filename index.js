@@ -54,6 +54,10 @@ function convert (source, options) {
             throw new Error('Dynamic module names are not supported.');
         }
 
+        if (isUseStrict(node)) {
+          node.parent.update('');
+        }
+
     });
 
     // no module definition found - return source untouched
@@ -342,5 +346,14 @@ function isDefineUsingIdentifier(node) {
  * @returns {string}
  */
 function makeImportName (moduleName) {
-    return '$__' + moduleName.replace(/-/g, '_').replace(/\//g, '_');
+    return '$__' + moduleName.replace(/[^a-zA-Z]/g, '_');
+}
+
+/**
+ * Returns true if node represents a 'use strict'-statement
+ * @param {object} node
+ * @returns {boolean}
+ */
+function isUseStrict (node) {
+    return node.type === 'Literal' && node.value === 'use strict';
 }
