@@ -299,7 +299,10 @@ function isModuleDefinition (node) {
     }
 
     // eg. require(['a', 'b'], function () {})
-    if (arrayEquals(argTypes, ['ArrayExpression', 'FunctionExpression'])) {
+    if (
+        arrayEquals(argTypes, ['ArrayExpression', 'FunctionExpression']) ||
+        arrayEquals(argTypes, ['ArrayExpression', 'ArrowFunctionExpression'])
+    ) {
         return true;
     }
 
