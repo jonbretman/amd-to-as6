@@ -22,6 +22,9 @@ program
     .option('-b --beautify',
             'Run the output through jsbeautify (mainly useful for fixing indentation)',
             false)
+    .option('-I --indent [size]',
+            'Sets the indent size for jsbeautify',
+            4)
     .parse(process.argv);
 
 if (program.dir && !program.out) {
@@ -72,7 +75,8 @@ inputFiles.forEach(function (srcFile) {
 
     try {
         compiled = amdtoes6(context, {
-            beautify: program.beautify
+            beautify: program.beautify,
+            indent: program.indent
         });
     }
     catch (e) {
