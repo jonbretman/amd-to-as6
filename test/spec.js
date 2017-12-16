@@ -7,10 +7,18 @@ var readFile = function (name) {
 
 var makeTest = function (name) {
 
-    exports['test ' + name.replace(/-/g, ' ')] = function (test) {
-        test.equal(amdToEs6(readFile(name), {beautify: true}), readFile(name + '-expected'));
-        test.done();
+    var baseTestName = 'test ' + name.replace(/-/g, ' ');
+    var expectedOutputFileName = readFile(name.replace(/-arrow$/, '') + '-expected');
+
+    var makeTestCase = function (inputFilename) {
+        return function (test) {
+            test.equal(amdToEs6(readFile(inputFilename), {beautify: true}), expectedOutputFileName);
+            test.done();
+        };        
     };
+
+    exports[baseTestName] = makeTestCase(name);
+    exports[baseTestName + ' (using arrow function)'] = makeTestCase(name + '-arrow');
 
 };
 makeTest('define-with-deps');
@@ -23,12 +31,19 @@ makeTest('use-strict');
 
 var makeErrorCaseTest = function (name, message) {
 
-    exports['test ' + name.replace(/-/g, ' ') + ' throws error'] = function (test) {
-        test.throws(function () {
-            amdToEs6(readFile(name));
-        }, new RegExp(message));
-        test.done();
+    var makeErrorCaseTest = function(inputFilename) {
+        return function (test) {
+            test.throws(function () {
+                amdToEs6(readFile(inputFilename));
+            }, new RegExp(message));
+            test.done();
+        };
     };
+
+    var baseTestName = 'test ' + name.replace(/-/g, ' ');
+
+    exports[baseTestName + ' throws error'] = makeErrorCaseTest(name);
+    exports[baseTestName + ' (using arrow function) throws error'] = makeErrorCaseTest(name + '-arrow');
 
 };
 makeErrorCaseTest('multiple-module-definitions', 'Found multiple module definitions in one file.');

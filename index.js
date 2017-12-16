@@ -303,8 +303,18 @@ function isModuleDefinition (node) {
         return true;
     }
 
+    // eg. require(['a', 'b'], () => {})
+    if (arrayEquals(argTypes, ['ArrayExpression', 'ArrowFunctionExpression'])) {
+        return true;
+    }
+
     // eg. require(function () {}) or define(function () {})
     if (arrayEquals(argTypes, ['FunctionExpression'])) {
+        return true;
+    }
+
+    // eg. require(() => {}) or define(() => {})
+    if (arrayEquals(argTypes, ['ArrowFunctionExpression'])) {
         return true;
     }
 }

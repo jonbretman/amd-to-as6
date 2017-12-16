@@ -1,0 +1,5 @@
+require(() => {
+
+    return 'something';
+
+});

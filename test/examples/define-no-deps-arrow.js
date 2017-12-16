@@ -1,0 +1,5 @@
+define(() => {
+
+    return 'something';
+
+});
