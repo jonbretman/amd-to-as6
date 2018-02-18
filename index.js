@@ -12,7 +12,7 @@ module.exports = convert;
  * @returns {string}
  */
 function convert (source, options) {
-
+    console.log('################################################## convert');
     options = options || {};
 
     var dependenciesMap = {};
@@ -22,7 +22,7 @@ function convert (source, options) {
 
     var result = falafel(source, {
         parser: acorn,
-        plugins: {jsx: true},
+        plugins: {jsx: true, stage3: true},
         ecmaVersion: 6
     }, function (node) {
         if (isNamedDefine(node)) {

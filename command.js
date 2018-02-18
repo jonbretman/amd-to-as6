@@ -1,1 +1,3 @@
-./bin/amdtoes6 diet.js > diet.parsed.js
+./bin/amdtoes6 --out bla/js --dir bla
+
+    
