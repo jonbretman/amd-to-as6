@@ -20,7 +20,7 @@
     "test": "test"
   },
   "dependencies": {
-    "acorn-jsx": "^2.0.0",
+    "acorn-jsx": "dahel/acorn-jsx",
     "commander": "^2.4.0",
     "falafel": "~1.2.0",
     "glob": "^4.0.6",
