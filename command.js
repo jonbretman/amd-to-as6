@@ -1,3 +1,3 @@
-./bin/amdtoes6 --out bla/js --dir bla
+./bin/amdtoes6 --out output --dir bla
 
     

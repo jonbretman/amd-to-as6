@@ -3,10 +3,12 @@ var falafel = require('falafel');
 var acorn = require('acorn');
 var injectAcornJsx = require('acorn-jsx/inject');
 var injectAcornObjectRestSpread = require('acorn-object-rest-spread/inject');
+var injectAcornStage3 = require('acorn-stage3/inject');
 var beautify = require('js-beautify').js_beautify;
 
 injectAcornJsx(acorn);
 injectAcornObjectRestSpread(acorn);
+injectAcornStage3(acorn);
 
 module.exports = convert;
 
@@ -29,7 +31,8 @@ function convert (source, options) {
         parser: acorn,
         plugins: {
             jsx: true,
-            objectRestSpread: true
+            objectRestSpread: true,
+            stage3: true
         },
         ecmaVersion: 6
     }, function (node) {
@@ -42,7 +45,7 @@ function convert (source, options) {
         }
 
         if (isModuleDefinition(node)) {
-
+            console.log('################################################### 1');
             if (mainCallExpression) {
                 throw new Error('Found multiple module definitions in one file.');
             }
@@ -65,7 +68,6 @@ function convert (source, options) {
         if (isUseStrict(node)) {
           node.parent.update('');
         }
-
     });
 
     // no module definition found - return source untouched
@@ -308,6 +310,11 @@ function isModuleDefinition (node) {
 
     // eg. require(['a', 'b'], function () {})
     if (arrayEquals(argTypes, ['ArrayExpression', 'FunctionExpression'])) {
+        return true;
+    }
+
+    // eg. require(['a', 'b'], () => {})
+    if (arrayEquals(argTypes, ['ArrayExpression', 'ArrowFunctionExpression'])) {
         return true;
     }
 

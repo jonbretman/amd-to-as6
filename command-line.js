@@ -44,8 +44,6 @@ if (!program.dir && !program.args.length) {
 var inputFiles = program.args;
 
 if (program.dir) {
-    console.log('################################################## 1');
-
     inputFiles = glob.sync(program.glob, {
         cwd: program.dir
     });
