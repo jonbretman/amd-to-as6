@@ -6,14 +6,15 @@ import service from 'app/system/services/store/service';
 export default {
     ...service,
 
-/**
- * @type {String}
- */
-    id: 'diet',
+    /**
+     * @type {String}
+     */
+        id: 'diet',
 
-/**
- * @returns {String}
- */
+    /**
+     * @returns {String}
+     */
     getUrl() {
-    return `${CONFIG.API_URL}/billing/plans`;
+        return `${CONFIG.API_URL}/billing/plans`;
+    }
 }

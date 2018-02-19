@@ -179,7 +179,7 @@ function updateReturnStatement (functionExpression) {
     if (functionExpression.body.type === 'ObjectExpression') {
         console.log('################################################### this is it!!!');
         console.log(functionExpression.body.source());
-        console.log(functionExpression.body.update('\n\n\nexport default ' + functionExpression.body.source()));
+        console.log(functionExpression.body.update('{\n\nexport default ' + functionExpression.body.source() + '}'));
     } else {
         //console.log('################################################### functionExpression', functionExpression);
         //console.log('################################################### ');
