@@ -42,7 +42,6 @@ if (!program.dir && !program.args.length) {
 var inputFiles = program.args;
 
 if (program.dir) {
-
     inputFiles = glob.sync(program.glob, {
         cwd: program.dir
     });

@@ -1,7 +1,14 @@
 var os = require('os');
 var falafel = require('falafel');
-var acorn = require('acorn-jsx');
+var acorn = require('acorn');
+var injectAcornJsx = require('acorn-jsx/inject');
+var injectAcornObjectRestSpread = require('acorn-object-rest-spread/inject');
+var injectAcornStage3 = require('acorn-stage3/inject');
 var beautify = require('js-beautify').js_beautify;
+
+injectAcornJsx(acorn);
+injectAcornObjectRestSpread(acorn);
+injectAcornStage3(acorn);
 
 module.exports = convert;
 
@@ -12,7 +19,6 @@ module.exports = convert;
  * @returns {string}
  */
 function convert (source, options) {
-
     options = options || {};
 
     var dependenciesMap = {};
@@ -22,7 +28,11 @@ function convert (source, options) {
 
     var result = falafel(source, {
         parser: acorn,
-        plugins: {jsx: true},
+        plugins: {
+            jsx: true,
+            objectRestSpread: true,
+            stage3: true
+        },
         ecmaVersion: 6
     }, function (node) {
         if (isNamedDefine(node)) {
@@ -34,7 +44,6 @@ function convert (source, options) {
         }
 
         if (isModuleDefinition(node)) {
-
             if (mainCallExpression) {
                 throw new Error('Found multiple module definitions in one file.');
             }
@@ -57,7 +66,6 @@ function convert (source, options) {
         if (isUseStrict(node)) {
           node.parent.update('');
         }
-
     });
 
     // no module definition found - return source untouched
@@ -162,11 +170,17 @@ function getImportStatements (dependencies) {
  * @param {object} functionExpression
  */
 function updateReturnStatement (functionExpression) {
-    functionExpression.body.body.forEach(function (node) {
-        if (node.type === 'ReturnStatement') {
-            node.update(node.source().replace('return ', 'export default '));
-        }
-    });
+    if (functionExpression.body.type === 'ObjectExpression') {
+        functionExpression.body.update('{\n\nexport default ' + functionExpression.body.source() + '}')
+    } else {
+        functionExpression.body.body.forEach(function (node) {
+            if (node.type === 'ReturnStatement') {
+                node.update(node.source().replace('return ', 'export default '));
+            }
+        });
+    }
+
+
 }
 
 /**
@@ -300,6 +314,11 @@ function isModuleDefinition (node) {
 
     // eg. require(['a', 'b'], function () {})
     if (arrayEquals(argTypes, ['ArrayExpression', 'FunctionExpression'])) {
+        return true;
+    }
+
+    // eg. require(['a', 'b'], () => {})
+    if (arrayEquals(argTypes, ['ArrayExpression', 'ArrowFunctionExpression'])) {
         return true;
     }
 
