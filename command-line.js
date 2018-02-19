@@ -5,8 +5,6 @@ var fs = require('fs');
 var amdtoes6 = require('./index');
 var mkdirp = require('mkdirp');
 
-console.log('################################################## goo');
-
 program
     .option('-d --dir <dirname>',
             'Use this option to specify a directory to compile.')
