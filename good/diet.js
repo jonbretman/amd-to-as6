@@ -3,7 +3,7 @@
 define([
     'config',
     'app/system/services/store/service'
-], function (
+], (
     CONFIG,
     service
 ) => {

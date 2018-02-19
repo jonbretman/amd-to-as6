@@ -45,7 +45,6 @@ function convert (source, options) {
         }
 
         if (isModuleDefinition(node)) {
-            console.log('################################################### 1');
             if (mainCallExpression) {
                 throw new Error('Found multiple module definitions in one file.');
             }
@@ -79,6 +78,8 @@ function convert (source, options) {
     var moduleFunc = mainCallExpression.arguments[mainCallExpression.arguments.length > 1 ? 1 : 0];
     var hasDeps = moduleDeps && moduleDeps.elements.length > 0;
 
+    console.log('################################################### moduleFunc', moduleFunc);
+
     if (hasDeps) {
 
         var modulePaths = moduleDeps.elements.map(function (node) {
@@ -95,6 +96,7 @@ function convert (source, options) {
         }, {}));
     }
 
+   console.log('################################################### syncRequires', syncRequires);
     syncRequires.forEach(function (node) {
         var moduleName = node.arguments[0].raw;
 
@@ -107,6 +109,7 @@ function convert (source, options) {
         node.update(dependenciesMap[moduleName]);
     });
 
+    console.log('################################################### requiresWithSideEffects', requiresWithSideEffects);
     requiresWithSideEffects.forEach(function (node) {
 
         // get the module names
@@ -115,6 +118,7 @@ function convert (source, options) {
         });
 
         // make sure these modules are imported
+        console.log('################################################### moduleNames', moduleNames);
         moduleNames.forEach(function (moduleName) {
             if (!dependenciesMap.hasOwnProperty(moduleName)) {
                 dependenciesMap[moduleName] = null;
@@ -172,11 +176,23 @@ function getImportStatements (dependencies) {
  * @param {object} functionExpression
  */
 function updateReturnStatement (functionExpression) {
-    functionExpression.body.body.forEach(function (node) {
-        if (node.type === 'ReturnStatement') {
-            node.update(node.source().replace('return ', 'export default '));
-        }
-    });
+    if (functionExpression.body.type === 'ObjectExpression') {
+        console.log('################################################### this is it!!!');
+        console.log(functionExpression.body.source());
+        console.log(functionExpression.body.update('\n\n\nexport default ' + functionExpression.body.source()));
+    } else {
+        //console.log('################################################### functionExpression', functionExpression);
+        //console.log('################################################### ');
+        //console.log('################################################### ');
+        //console.log('################################################### ');
+        functionExpression.body.body.forEach(function (node) {
+            if (node.type === 'ReturnStatement') {
+                node.update(node.source().replace('return ', 'export default '));
+            }
+        });
+    }
+
+
 }
 
 /**
