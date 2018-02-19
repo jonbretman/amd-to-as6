@@ -1,7 +1,12 @@
 var os = require('os');
 var falafel = require('falafel');
-var acorn = require('acorn-jsx');
+var acorn = require('acorn');
+var injectAcornJsx = require('acorn-jsx/inject');
+var injectAcornObjectRestSpread = require('acorn-object-rest-spread/inject');
 var beautify = require('js-beautify').js_beautify;
+
+injectAcornJsx(acorn);
+injectAcornObjectRestSpread(acorn);
 
 module.exports = convert;
 
@@ -12,7 +17,7 @@ module.exports = convert;
  * @returns {string}
  */
 function convert (source, options) {
-    console.log('################################################## convert');
+    console.log('################################################## convert 1.0.0');
     options = options || {};
 
     var dependenciesMap = {};
@@ -22,7 +27,10 @@ function convert (source, options) {
 
     var result = falafel(source, {
         parser: acorn,
-        plugins: {jsx: true, stage3: true},
+        plugins: {
+            jsx: true,
+            objectRestSpread: true
+        },
         ecmaVersion: 6
     }, function (node) {
         if (isNamedDefine(node)) {
