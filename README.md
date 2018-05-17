@@ -165,6 +165,7 @@ import b from 'path/to/b';
     -i --ignore <glob>  If using the --dir options this specifies to exclude eg. libs/**/*
     -g --glob [glob]    If using the --dir option, optionally specify the glob pattern to match for input files
     -b --beautify       Run the output through jsbeautify (mainly useful for fixing indentation)
+    -I --indent [size]  Sets the indent size for jsbeautify (default: 4)
 
 ```
 

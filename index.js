@@ -123,7 +123,7 @@ function convert (source, options) {
 
     // fix indentation
     if (options.beautify) {
-        moduleCode = beautify(moduleCode);
+        moduleCode = beautify(moduleCode, { indent_size: options.indent });
 
         // jsbeautify doesn't understand es6 module syntax yet
         moduleCode = moduleCode.replace(/export[\s\S]default[\s\S]/, 'export default ');
