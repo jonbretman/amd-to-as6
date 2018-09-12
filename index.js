@@ -169,7 +169,7 @@ function getImportStatements (dependencies) {
 function updateReturnStatement (functionExpression) {
     functionExpression.body.body.forEach(function (node) {
         if (node.type === 'ReturnStatement') {
-            node.update(node.source().replace('return ', 'export default '));
+            node.update(node.source().replace(/\breturn\b/, 'export default'));
         }
     });
 }
