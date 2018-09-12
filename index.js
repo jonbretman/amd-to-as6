@@ -76,6 +76,11 @@ function convert (source, options) {
         });
 
         var importNames = moduleFunc.params.map(function (param) {
+
+            if (param.type === 'ObjectPattern') {
+                return source.slice(param.start, param.end);
+            }
+
             return param.name;
         });
 
