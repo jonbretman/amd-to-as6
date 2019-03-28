@@ -28,6 +28,8 @@ makeTest('require-no-deps');
 makeTest('inline-sync-requires');
 makeTest('preserve-quotes');
 makeTest('use-strict');
+makeTest('async-await');
+makeTest('rest-object');
 
 var makeErrorCaseTest = function (name, message) {
 
