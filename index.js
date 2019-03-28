@@ -80,6 +80,11 @@ function convert (source, options) {
         });
 
         var importNames = moduleFunc.params.map(function (param) {
+
+            if (param.type === 'ObjectPattern') {
+                return source.slice(param.start, param.end);
+            }
+
             return param.name;
         });
 
@@ -168,7 +173,7 @@ function getImportStatements (dependencies) {
 function updateReturnStatement (functionExpression) {
     functionExpression.body.body.forEach(function (node) {
         if (node.type === 'ReturnStatement') {
-            node.update(node.source().replace('return ', 'export default '));
+            node.update(node.source().replace(/\breturn\b/, 'export default'));
         }
     });
 }
