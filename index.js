@@ -1,9 +1,12 @@
 var os = require('os');
 var falafel = require('falafel');
-var acorn = require('acorn-jsx');
+var jsx = require('acorn-jsx');
+var acorn = require('acorn');
 var beautify = require('js-beautify').js_beautify;
 
 module.exports = convert;
+
+var JSXParser = acorn.Parser.extend(jsx());
 
 /**
  * Converts some code from AMD to ES6
@@ -21,9 +24,10 @@ function convert (source, options) {
     var mainCallExpression = null;
 
     var result = falafel(source, {
-        parser: acorn,
-        plugins: {jsx: true},
-        ecmaVersion: 6
+        parser: {
+            parse: JSXParser.parse.bind(JSXParser)
+        },
+        ecmaVersion: 9
     }, function (node) {
         if (isNamedDefine(node)) {
             throw new Error('Found a named define - this is not supported.');
