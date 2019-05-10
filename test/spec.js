@@ -31,6 +31,7 @@ makeTest('use-strict');
 makeTest('async-await');
 makeTest('rest-object');
 makeTest('class-with-array-method');
+makeTest('class-with-field');
 
 var makeErrorCaseTest = function (name, message) {
 
