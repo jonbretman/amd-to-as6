@@ -14,7 +14,7 @@ var makeTest = function (name) {
         return function (test) {
             test.equal(amdToEs6(readFile(inputFilename), {beautify: true}), expectedOutputFileName);
             test.done();
-        };        
+        };
     };
 
     exports[baseTestName] = makeTestCase(name);
@@ -30,6 +30,7 @@ makeTest('preserve-quotes');
 makeTest('use-strict');
 makeTest('async-await');
 makeTest('rest-object');
+makeTest('class-with-array-method');
 
 var makeErrorCaseTest = function (name, message) {
 

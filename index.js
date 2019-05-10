@@ -3,11 +3,13 @@ var falafel = require('falafel');
 var jsx = require('acorn-jsx');
 var acorn = require('acorn');
 var beautify = require('js-beautify').js_beautify;
+var classFields = require('acorn-class-fields');
+var staticClassFeatures = require('acorn-static-class-features');
 
 module.exports = convert;
 
-var JSXParser = acorn.Parser.extend(jsx());
 
+var JSXParser = acorn.Parser.extend(jsx(),classFields, staticClassFeatures);
 /**
  * Converts some code from AMD to ES6
  * @param {string} source
@@ -27,7 +29,10 @@ function convert (source, options) {
         parser: {
             parse: JSXParser.parse.bind(JSXParser)
         },
-        ecmaVersion: 9
+        ecmaVersion: 9,
+        plugins: {
+            jsx: true
+        },
     }, function (node) {
         if (isNamedDefine(node)) {
             throw new Error('Found a named define - this is not supported.');
@@ -59,7 +64,7 @@ function convert (source, options) {
         }
 
         if (isUseStrict(node)) {
-          node.parent.update('');
+            node.parent.update('');
         }
 
     });
@@ -132,7 +137,7 @@ function convert (source, options) {
 
     // fix indentation
     if (options.beautify) {
-        moduleCode = beautify(moduleCode, { indent_size: options.indent });
+        moduleCode = beautify(moduleCode, {indent_size: options.indent});
 
         // jsbeautify doesn't understand es6 module syntax yet
         moduleCode = moduleCode.replace(/export[\s\S]default[\s\S]/, 'export default ');
@@ -150,7 +155,7 @@ function convert (source, options) {
  * @param {object} dependencies
  * @returns {string}
  */
-function getImportStatements (dependencies) {
+function getImportStatements(dependencies) {
     var statements = [];
 
     for (var key in dependencies) {
@@ -170,7 +175,7 @@ function getImportStatements (dependencies) {
  * Updates the return statement of a FunctionExpression to be an 'export default'.
  * @param {object} functionExpression
  */
-function updateReturnStatement (functionExpression) {
+function updateReturnStatement(functionExpression) {
     functionExpression.body.body.forEach(function (node) {
         if (node.type === 'ReturnStatement') {
             node.update(node.source().replace(/\breturn\b/, 'export default'));
@@ -183,7 +188,7 @@ function updateReturnStatement (functionExpression) {
  * @param {object} moduleFuncNode
  * @returns {string}
  */
-function getModuleCode (moduleFuncNode) {
+function getModuleCode(moduleFuncNode) {
 
     updateReturnStatement(moduleFuncNode);
 
@@ -201,7 +206,7 @@ function getModuleCode (moduleFuncNode) {
  * @param {object} callExpression
  * @returns {array}
  */
-function getArgumentsTypes (callExpression) {
+function getArgumentsTypes(callExpression) {
     return callExpression.arguments.map(function (arg) {
         return arg.type;
     });
@@ -212,7 +217,7 @@ function getArgumentsTypes (callExpression) {
  * @param {object} node
  * @returns {boolean}
  */
-function isRequireOrDefine (node) {
+function isRequireOrDefine(node) {
     return isRequire(node) || isDefine(node);
 }
 
@@ -221,7 +226,7 @@ function isRequireOrDefine (node) {
  * @param {object} node
  * @returns {boolean}
  */
-function isRequire (node) {
+function isRequire(node) {
     return node.type === 'CallExpression' && node.callee.name === 'require';
 }
 
@@ -230,7 +235,7 @@ function isRequire (node) {
  * @param {object} node
  * @returns {boolean}
  */
-function isDefine (node) {
+function isDefine(node) {
     return node.type === 'CallExpression' && node.callee.name === 'define';
 }
 
@@ -240,7 +245,7 @@ function isDefine (node) {
  * @param {array} arr2
  * @returns {boolean}
  */
-function arrayEquals (arr1, arr2) {
+function arrayEquals(arr1, arr2) {
 
     if (arr1.length !== arr2.length) {
         return false;
@@ -260,9 +265,9 @@ function arrayEquals (arr1, arr2) {
  * @param {object} node
  * @returns {boolean}
  */
-function isSyncRequire (node) {
+function isSyncRequire(node) {
     return isRequire(node) &&
-           arrayEquals(getArgumentsTypes(node), ['Literal']);
+        arrayEquals(getArgumentsTypes(node), ['Literal']);
 }
 
 /**
@@ -283,7 +288,7 @@ function isRequireWithDynamicModuleName(node) {
  * @param {object} target
  * @param {object} source
  */
-function extend (target, source) {
+function extend(target, source) {
     for (var key in source) {
         target[key] = source[key];
     }
@@ -294,7 +299,7 @@ function extend (target, source) {
  * @param {object} node
  * @returns {boolean}
  */
-function isModuleDefinition (node) {
+function isModuleDefinition(node) {
 
     if (!isRequireOrDefine(node)) {
         return false;
@@ -333,7 +338,7 @@ function isModuleDefinition (node) {
  * @param {object} node
  * @returns {boolean}
  */
-function isRequireWithNoCallback (node) {
+function isRequireWithNoCallback(node) {
     return isRequire(node) && arrayEquals(getArgumentsTypes(node), ['ArrayExpression']);
 }
 
@@ -342,7 +347,7 @@ function isRequireWithNoCallback (node) {
  * @param {object} node
  * @returns {boolean}
  */
-function isNamedDefine (node) {
+function isNamedDefine(node) {
     return isDefine(node) && getArgumentsTypes(node)[0] === 'Literal';
 }
 
@@ -364,7 +369,7 @@ function isDefineUsingIdentifier(node) {
  * @param {string} moduleName
  * @returns {string}
  */
-function makeImportName (moduleName) {
+function makeImportName(moduleName) {
     return '$__' + moduleName.replace(/[^a-zA-Z]/g, '_');
 }
 
@@ -373,6 +378,6 @@ function makeImportName (moduleName) {
  * @param {object} node
  * @returns {boolean}
  */
-function isUseStrict (node) {
+function isUseStrict(node) {
     return node.type === 'Literal' && node.value === 'use strict';
 }
