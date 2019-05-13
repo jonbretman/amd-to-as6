@@ -176,11 +176,21 @@ function getImportStatements(dependencies) {
  * @param {object} functionExpression
  */
 function updateReturnStatement(functionExpression) {
+    try {
     functionExpression.body.body.forEach(function (node) {
         if (node.type === 'ReturnStatement') {
             node.update(node.source().replace(/\breturn\b/, 'export default'));
         }
     });
+
+    }catch (e) {
+        if(e.message == "Cannot read property 'forEach' of undefined") {
+            if(functionExpression.type === "ArrowFunctionExpression"){
+                functionExpression.body.update(` export default ${functionExpression.body.source()}; `)
+            }
+        }
+    }
+
 }
 
 /**

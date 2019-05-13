@@ -23,6 +23,7 @@ var makeTest = function (name) {
 };
 makeTest('define-with-deps');
 makeTest('define-no-deps');
+makeTest('define-no-deps-no-brace');
 makeTest('require-with-deps');
 makeTest('require-no-deps');
 makeTest('inline-sync-requires');
