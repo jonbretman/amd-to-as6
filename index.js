@@ -210,6 +210,14 @@ function updateImportStatement(functionExpression) {
                         .replace("(", " ")
                         .replace(")", " "))
                 }
+            } else  if(node.type === "ExpressionStatement"){
+                const regex = /\s*require\b\(.*\)/g;
+                if(regex.test(node.source())){
+                    node.update(node.source()
+                        .replace("require", 'import')
+                        .replace("(", " ")
+                        .replace(")", " "))
+                }
             }
         });
     } catch (e) {

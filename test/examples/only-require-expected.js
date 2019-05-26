@@ -1,4 +1,3 @@
-
 import 'some-package';
 
 class A {}
