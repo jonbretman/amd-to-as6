@@ -1,5 +1,4 @@
-import $__some_package from 'some-package';
-const re = $__some_package;
+import re from 'some-package';
 
 class A {
     test = () => {

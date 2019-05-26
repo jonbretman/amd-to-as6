@@ -131,10 +131,10 @@ function convert(source, options) {
     });
 
     // start with import statements
-    // var moduleCode = getImportStatements(dependenciesMap);
+    var moduleCode = getImportStatements(dependenciesMap);
 
     // add modules code
-    var moduleCode = getModuleCode(moduleFunc);
+    moduleCode += getModuleCode(moduleFunc);
 
     // fix indentation
     if (options.beautify) {
@@ -164,7 +164,8 @@ function getImportStatements(dependencies) {
         if (!dependencies[key]) {
             statements.push('import ' + key + ';');
         } else {
-            statements.push('import * as ' + "'" + dependencies[key] + "'" + ' from ' + key + ';');
+            statements.push('import ' + dependencies[key] + ' from ' + key + ';');
+//            statements.push('import * as ' + "'" + dependencies[key] + "'" + ' from ' + key + ';');
         }
     }
 
@@ -195,12 +196,15 @@ function updateReturnStatement(functionExpression) {
 
 
 function updateImportStatement(functionExpression) {
+    try {
         functionExpression.body.body.forEach(function (node) {
-            if (node.type === 'VariableDeclaration' && node.kind === "const") {
-                const regex = /const\b\s*({.+}|\w+)+\s*=\s*require\(.*\)/g;
+            if (node.type === 'VariableDeclaration') {
+                const regex = /\s*(const|var|let)\b\s*({.+}|\w+)+\s*=\s*require\(.*\)/g;
                 if (regex.test(node.source())) {
                     node.update(node.source()
                         .replace("const", " import ")
+                        .replace("var", " import ")
+                        .replace("let", " import ")
                         .replace("=","")
                         .replace("require", 'from')
                         .replace("(", " ")
@@ -208,7 +212,11 @@ function updateImportStatement(functionExpression) {
                 }
             }
         });
-
+    } catch (e) {
+        if (e.message != "Cannot read property 'forEach' of undefined") {
+               throw  e;
+        }
+    }
 }
 
 /**
