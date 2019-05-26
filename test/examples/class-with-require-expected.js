@@ -1,5 +1,7 @@
 import re from 'some-package';
 
-class A {}
+class A {
+
+}
 
 export default A;
