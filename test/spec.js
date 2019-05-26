@@ -22,18 +22,18 @@ var makeTest = function (name) {
 
 };
 makeTest('define-with-deps');
-makeTest('define-no-deps');
-makeTest('define-no-deps-no-brace');
-makeTest('require-with-deps');
-makeTest('require-no-deps');
-makeTest('inline-sync-requires');
-makeTest('preserve-quotes');
-makeTest('use-strict');
-makeTest('async-await');
-makeTest('rest-object');
-makeTest('class-with-array-method');
-makeTest('class-with-field');
-makeTest('class-with-static-field');
+// makeTest('define-no-deps');
+// makeTest('define-no-deps-no-brace');
+// makeTest('require-with-deps');
+// makeTest('require-no-deps');
+// makeTest('inline-sync-requires');
+// makeTest('preserve-quotes');
+// makeTest('use-strict');
+// makeTest('async-await');
+// makeTest('rest-object');
+// makeTest('class-with-array-method');
+// makeTest('class-with-field');
+// makeTest('class-with-static-field');
 
 var makeErrorCaseTest = function (name, message) {
 

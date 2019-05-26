@@ -9,14 +9,14 @@ var staticClassFeatures = require('acorn-static-class-features');
 module.exports = convert;
 
 
-var JSXParser = acorn.Parser.extend(jsx(),classFields, staticClassFeatures);
+var JSXParser = acorn.Parser.extend(jsx(), classFields, staticClassFeatures);
 /**
  * Converts some code from AMD to ES6
  * @param {string} source
  * @param {object} [options]
  * @returns {string}
  */
-function convert (source, options) {
+function convert(source, options) {
 
     options = options || {};
 
@@ -26,48 +26,49 @@ function convert (source, options) {
     var mainCallExpression = null;
 
     var result = falafel(source, {
-        parser: {
-            parse: JSXParser.parse.bind(JSXParser)
+            parser: {
+                parse: JSXParser.parse.bind(JSXParser)
+            },
+            ecmaVersion: 10,
+            plugins: {
+                jsx: true
+            },
         },
-        ecmaVersion: 9,
-        plugins: {
-            jsx: true
-        },
-    }, function (node) {
-        if (isNamedDefine(node)) {
-            throw new Error('Found a named define - this is not supported.');
-        }
-
-        if (isDefineUsingIdentifier(node)) {
-            throw new Error('Found a define using a variable as the callback - this is not supported.');
-        }
-
-        if (isModuleDefinition(node)) {
-
-            if (mainCallExpression) {
-                throw new Error('Found multiple module definitions in one file.');
+        function (node) {
+            if (isNamedDefine(node)) {
+                throw new Error('Found a named define - this is not supported.');
             }
 
-            mainCallExpression = node;
+            if (isDefineUsingIdentifier(node)) {
+                throw new Error('Found a define using a variable as the callback - this is not supported.');
+            }
+
+            if (isModuleDefinition(node)) {
+
+                if (mainCallExpression) {
+                    throw new Error('Found multiple module definitions in one file.');
+                }
+
+                mainCallExpression = node;
         }
 
         else if (isSyncRequire(node)) {
-            syncRequires.push(node);
+                syncRequires.push(node);
         }
 
         else if (isRequireWithNoCallback(node)) {
-            requiresWithSideEffects.push(node);
+                requiresWithSideEffects.push(node);
         }
 
         else if (isRequireWithDynamicModuleName(node)) {
-            throw new Error('Dynamic module names are not supported.');
-        }
+                throw new Error('Dynamic module names are not supported.');
+            }
 
         if (isUseStrict(node)) {
             node.parent.update('');
         }
 
-    });
+        });
 
     // no module definition found - return source untouched
     if (!mainCallExpression) {
@@ -99,17 +100,17 @@ function convert (source, options) {
         }, {}));
     }
 
-    syncRequires.forEach(function (node) {
-        var moduleName = node.arguments[0].raw;
-
-        // if no import name assigned then create one
-        if (!dependenciesMap[moduleName]) {
-            dependenciesMap[moduleName] = makeImportName(node.arguments[0].value);
-        }
-
-        // replace with the import name
-        node.update(dependenciesMap[moduleName]);
-    });
+    // syncRequires.forEach(function (node) {
+    //     var moduleName = node.arguments[0].raw;
+    //
+    //     // if no import name assigned then create one
+    //     if (!dependenciesMap[moduleName]) {
+    //         dependenciesMap[moduleName] = makeImportName(node.arguments[0].value);
+    //     }
+    //
+    //     // replace with the import name
+    //     node.update(dependenciesMap[moduleName]);
+    // });
 
     requiresWithSideEffects.forEach(function (node) {
 
@@ -130,10 +131,10 @@ function convert (source, options) {
     });
 
     // start with import statements
-    var moduleCode = getImportStatements(dependenciesMap);
+    // var moduleCode = getImportStatements(dependenciesMap);
 
     // add modules code
-    moduleCode += getModuleCode(moduleFunc);
+    var moduleCode = getModuleCode(moduleFunc);
 
     // fix indentation
     if (options.beautify) {
@@ -162,9 +163,8 @@ function getImportStatements(dependencies) {
 
         if (!dependencies[key]) {
             statements.push('import ' + key + ';');
-        }
-        else {
-            statements.push('import ' + dependencies[key] + ' from ' + key + ';');
+        } else {
+            statements.push('import * as ' + "'" + dependencies[key] + "'" + ' from ' + key + ';');
         }
     }
 
@@ -177,19 +177,37 @@ function getImportStatements(dependencies) {
  */
 function updateReturnStatement(functionExpression) {
     try {
-    functionExpression.body.body.forEach(function (node) {
-        if (node.type === 'ReturnStatement') {
-            node.update(node.source().replace(/\breturn\b/, 'export default'));
-        }
-    });
+        functionExpression.body.body.forEach(function (node) {
+            if (node.type === 'ReturnStatement') {
+                node.update(node.source().replace(/\breturn\b/, 'export default'));
+            }
+        });
 
-    }catch (e) {
-        if(e.message == "Cannot read property 'forEach' of undefined") {
-            if(functionExpression.type === "ArrowFunctionExpression"){
+    } catch (e) {
+        if (e.message == "Cannot read property 'forEach' of undefined") {
+            if (functionExpression.type === "ArrowFunctionExpression") {
                 functionExpression.body.update(` export default ${functionExpression.body.source()}; `)
             }
         }
     }
+
+}
+
+
+function updateImportStatement(functionExpression) {
+        functionExpression.body.body.forEach(function (node) {
+            if (node.type === 'VariableDeclaration' && node.kind === "const") {
+                const regex = /const\b\s*({.+}|\w+)+\s*=\s*require\(.*\)/g;
+                if (regex.test(node.source())) {
+                    node.update(node.source()
+                        .replace("const", " import ")
+                        .replace("=","")
+                        .replace("require", 'from')
+                        .replace("(", " ")
+                        .replace(")", " "))
+                }
+            }
+        });
 
 }
 
@@ -200,6 +218,7 @@ function updateReturnStatement(functionExpression) {
  */
 function getModuleCode(moduleFuncNode) {
 
+    updateImportStatement(moduleFuncNode);
     updateReturnStatement(moduleFuncNode);
 
     var moduleCode = moduleFuncNode.body.source();
@@ -268,6 +287,20 @@ function arrayEquals(arr1, arr2) {
     }
 
     return true;
+}
+
+function isConstImport(node) {
+    if (node.type === 'VariableDeclaration' && node.kind === "const") {
+        const regex = /const\s.+=\srequire\('.+'\)/g;
+        if (regex.test(node.source())) {
+            node.update(node.source()
+                .replace("const", " import ")
+                .replace("require", 'from')
+                .replace("(", " ")
+                .replace(")", " "))
+        }
+    }
+
 }
 
 /**
@@ -380,7 +413,8 @@ function isDefineUsingIdentifier(node) {
  * @returns {string}
  */
 function makeImportName(moduleName) {
-    return '$__' + moduleName.replace(/[^a-zA-Z]/g, '_');
+    return moduleName;
+    // return '$__' + moduleName.replace(/[^a-zA-Z]/g, '_');
 }
 
 /**
