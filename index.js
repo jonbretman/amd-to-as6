@@ -199,7 +199,8 @@ function updateImportStatement(functionExpression) {
     try {
         functionExpression.body.body.forEach(function (node) {
             if (node.type === 'VariableDeclaration') {
-                const regex = /\s*(const|var|let)\b\s*({.+}|\w+)+\s*=\s*require\(.*\)/g;
+                // this to handle const|let|var XXX = require("some");
+                const regex = /\s*(const|var|let)\b\s*({.+}|\w+)+\s*=\s*(require\(.*\))\s*;$/g;
                 if (regex.test(node.source())) {
                     node.update(node.source()
                         .replace("const", " import ")
@@ -209,6 +210,12 @@ function updateImportStatement(functionExpression) {
                         .replace("require", 'from')
                         .replace("(", " ")
                         .replace(")", " "))
+                } else {                    //TODO: need todo next week
+                    // this to handle const some = require("some").name;
+                    const regex = /\s*(const|var|let)\b\s*({.+}|\w+)+\s*=\s*(require\(.*\))(\.\w+);$/g
+                    if(regex.test(node.source())){
+
+                    }
                 }
             } else  if(node.type === "ExpressionStatement"){
                 const regex = /\s*require\b\(.*\)/g;
