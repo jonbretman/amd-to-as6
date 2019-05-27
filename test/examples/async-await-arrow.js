@@ -1,5 +1,4 @@
 define([
-define([
     'some/path/to/a',
     'some/path/to/b',
     'some/path/to/c'

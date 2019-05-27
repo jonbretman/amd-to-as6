@@ -64,9 +64,9 @@ function convert(source, options) {
                 throw new Error('Dynamic module names are not supported.');
             }
 
-        if (isUseStrict(node)) {
-            node.parent.update('');
-        }
+            if (isUseStrict(node)) {
+                node.parent.update('');
+            }
 
         });
 
@@ -199,27 +199,36 @@ function updateImportStatement(functionExpression) {
     try {
         functionExpression.body.body.forEach(function (node) {
             if (node.type === 'VariableDeclaration') {
-                // this to handle const|let|var XXX = require("some");
-                const regex = /\s*(const|var|let)\b\s*({.+}|\w+)+\s*=\s*(require\(.*\))\s*;$/g;
-                if (regex.test(node.source())) {
-                    node.update(node.source()
-                        .replace("const", " import ")
-                        .replace("var", " import ")
-                        .replace("let", " import ")
-                        .replace("=","")
-                        .replace("require", 'from')
-                        .replace("(", " ")
-                        .replace(")", " "))
-                } else {                    //TODO: need todo next week
-                    // this to handle const some = require("some").name;
-                    const regex = /\s*(const|var|let)\b\s*({.+}|\w+)+\s*=\s*(require\(.*\))(\.\w+);$/g
-                    if(regex.test(node.source())){
+                // for friendly read pls use https://regex101.com/ to get result
+                // this to handle const|let|var XXX|{ XXX } = require("some");
+                const normalImportRegex = /\s*(const|var|let)\b\s*({.+}|\w+)+\s*(=)\s*(require\(\s*){1}.*(\))\s*;\s*$/g;
 
+                // this to handle const some = require("some").name;
+                const regex = /\s*(const|var|let)\b\s*({.+}|\w+)+\s*(=)\s*(require\(\s*){1}.*(\))(\.)(\w+)\s*;\s*$/g
+
+                const group = normalImportRegex.exec(node.source())
+                if (group != null) {
+                    node.update(node.source()
+                        .replace(group[1], " import ")
+                        .replace(group[3], "")
+                        .replace(group[4], 'from')
+                        .replace(group[5], ""))
+                } else {
+                    var group2 = regex.exec(node.source())
+                    if(group2 !=null) {
+                        let tempResult = node.source()
+                            .replace(group2[1], " import ")
+                            .replace(group2[2], "{ " + group2[7] + " }")
+                            .replace(group2[3], "")
+                            .replace(group2[4], " from ")
+                            .replace(group2[5], "")
+
+                        node.update(tempResult.replace(/(?<=(from\s*['"]\w*['"]))\.\w*(?=\s*;)/g, ""))
                     }
                 }
-            } else  if(node.type === "ExpressionStatement"){
-                const regex = /\s*require\b\(.*\)/g;
-                if(regex.test(node.source())){
+            } else if (node.type === "ExpressionStatement") {
+                const regex = /\s*require\b\(.*\)\s*;$/g;
+                if (regex.test(node.source())) {
                     node.update(node.source()
                         .replace("require", 'import')
                         .replace("(", " ")
@@ -229,7 +238,7 @@ function updateImportStatement(functionExpression) {
         });
     } catch (e) {
         if (e.message != "Cannot read property 'forEach' of undefined") {
-               throw  e;
+            throw  e;
         }
     }
 }
