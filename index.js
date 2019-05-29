@@ -201,10 +201,10 @@ function updateImportStatement(functionExpression) {
             if (node.type === 'VariableDeclaration') {
                 // for friendly read pls use https://regex101.com/ to get result
                 // this to handle const|let|var XXX|{ XXX } = require("some");
-                const normalImportRegex = /\s*(const|var|let)\b\s*({.+}|\w+)+\s*(=)\s*(require\(\s*){1}.*(\))\s*;\s*$/g;
+                const normalImportRegex = /\s*(const|var|let)\b\s*(\{.+\}|\w+)\s*(=)\s*(require\(\s*){1}.*(\))\s*;\s*$/g;
 
                 // this to handle const some = require("some").name;
-                const regex = /\s*(const|var|let)\b\s*({.+}|\w+)+\s*(=)\s*(require\(\s*){1}.*(\))(\.)(\w+)\s*;\s*$/g
+                const regex = /\s*(const|var|let)\b\s*(\{.+\}|\w+)\s*(=)\s*(require\(\s*){1}.*(\))(\.)(\w+)\s*;\s*$/g
 
                 const group = normalImportRegex.exec(node.source())
                 if (group != null) {
