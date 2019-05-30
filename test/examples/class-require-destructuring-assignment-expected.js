@@ -6,6 +6,8 @@ import {
     home
 }
 from 'some';
+import * as _ from 'loadsh';
+import * as $ from 'jquery';
 
 class A {}
 

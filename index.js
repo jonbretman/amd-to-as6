@@ -201,17 +201,18 @@ function updateImportStatement(functionExpression) {
             if (node.type === 'VariableDeclaration') {
                 // for friendly read pls use https://regex101.com/ to get result
                 // this to handle const|let|var XXX|{ XXX } = require("some");
-                const normalImportRegex = /\s*(const|var|let)\b\s*(\{.+\}|\w+)\s*(=)\s*(require\(\s*){1}.*(\))\s*;\s*$/g;
+                const normalImportRegex = /\s*(const|var|let)\b\s*(\{.+\}|\w+|\$)\s*(=)\s*(require\(\s*){1}.*(\))\s*;\s*$/g;
 
                 // this to handle const some = require("some").name;
-                const regex = /\s*(const|var|let)\b\s*(\{.+\}|\w+)\s*(=)\s*(require\(\s*){1}.*(\))(\.)(\w+)\s*;\s*$/g
+                const regex = /\s*(const|var|let)\b\s*(\{.+\}|\w+|\$)\s*(=)\s*(require\(\s*){1}.*(\))(\.)(\w+)\s*;\s*$/g
 
                 const group = normalImportRegex.exec(node.source())
                 if (group != null) {
                     node.update(node.source()
                         .replace(group[1], " import ")
+                        .replace(group[2], group[2] == "$" ? " * as $ ": group[2] == "_" ? " * as _ " : group[2])
                         .replace(group[3], "")
-                        .replace(group[4], 'from')
+                        .replace(group[4], ' from ')
                         .replace(group[5], ""))
                 } else {
                     var group2 = regex.exec(node.source())
@@ -223,7 +224,7 @@ function updateImportStatement(functionExpression) {
                             .replace(group2[4], " from ")
                             .replace(group2[5], "")
 
-                        node.update(tempResult.replace(/(?<=(from\s*['"]\w*['"]))\.\w*(?=\s*;)/g, ""))
+                        node.update(tempResult.replace(/(?<=(from\s*['"]\w*['"]))\s*\.\w*(?=\s*;)/g, ""))
                     }
                 }
             } else if (node.type === "ExpressionStatement") {
