@@ -14,22 +14,31 @@ var makeTest = function (name) {
         return function (test) {
             test.equal(amdToEs6(readFile(inputFilename), {beautify: true}), expectedOutputFileName);
             test.done();
-        };        
+        };
     };
 
     exports[baseTestName] = makeTestCase(name);
     exports[baseTestName + ' (using arrow function)'] = makeTestCase(name + '-arrow');
 
 };
-makeTest('define-with-deps');
-makeTest('define-no-deps');
-makeTest('require-with-deps');
-makeTest('require-no-deps');
-makeTest('inline-sync-requires');
-makeTest('preserve-quotes');
-makeTest('use-strict');
 makeTest('async-await');
+makeTest('class-require-destructuring-assignment');
+makeTest('class-with-array-method');
+makeTest('class-with-field');
+makeTest('class-with-require');
+makeTest('class-with-static-field');
+makeTest('class-with-static-props');
+makeTest('define-no-deps');
+makeTest('define-no-deps-no-brace');
+makeTest('define-with-deps');
+makeTest('inline-sync-requires');
+makeTest('only-require');
+makeTest('preserve-quotes');
+makeTest('require-no-deps');
+makeTest('require-with-custom-loader');
+makeTest('require-with-deps');
 makeTest('rest-object');
+makeTest('use-strict');
 
 var makeErrorCaseTest = function (name, message) {
 

@@ -1,6 +1,6 @@
 {
-  "name": "amd-to-es6",
-  "version": "0.2.0",
+  "name": "amd-to-es6-other",
+  "version": "0.2.5",
   "description": "Convert AMD modules into ES6 modules",
   "author": "Jon Bretman",
   "main": "index.js",
@@ -14,20 +14,21 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jonbretman/amd-to-as6.git"
+    "url": "https://github.com/1483523635/amd-to-as6-other"
   },
   "directories": {
     "test": "test"
   },
   "dependencies": {
     "acorn": "^6.1.1",
+    "acorn-class-fields": "^0.3.1",
     "acorn-jsx": "^5.0.1",
+    "acorn-static-class-features": "^0.2.0",
     "commander": "^2.4.0",
     "falafel": "^2.1.0",
     "glob": "^7.1.3",
     "js-beautify": "~1.5.1",
-    "mkdirp": "^0.5.0"
-  },
+    "mkdirp": "^0.5.0"  },
   "devDependencies": {
     "nodeunit": "^0.11.3"
   },

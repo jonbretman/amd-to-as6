@@ -11,7 +11,7 @@ AMD and RequireJS are great, but ES6 modules provide a nicer syntax for writing 
 ### Installing
 
 ```sh
-npm install amd-to-es6 -g
+npm install amd-to-es6-other -g
 ```
 
 ### Usage
